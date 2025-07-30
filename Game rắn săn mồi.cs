@@ -1,22 +1,22 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 
 class Program
 {
-    static int width = 40;
-    static int height = 20;
+    static int width = 20;
+    static int height = 10;
     static int score = 0;
     static Random rand = new Random();
 
-    static (int x, int y) food;
-    static (int x, int y) direction = (1, 0);
+    static (int, int) food;
+    static (int, int) direction = (1, 0);
 
-    static List<(int x, int y)> snake = new List<(int x, int y)>
+    static List<(int, int)> snake = new List<(int, int)>
     {
-        (10, 10),
-        (9, 10),
-        (8, 10)
+        (5, 5),
+        (4, 5),
+        (3, 5)
     };
 
     static void Main()
@@ -25,6 +25,7 @@ class Program
         Console.SetWindowSize(width + 2, height + 3);
         Console.SetBufferSize(width + 2, height + 3);
 
+        ShowInstructions();
         SpawnFood();
 
         Thread inputThread = new Thread(ReadInput);
@@ -34,8 +35,16 @@ class Program
         {
             Move();
             Draw();
-            Thread.Sleep(100);
+            Thread.Sleep(200);
         }
+    }
+
+    static void ShowInstructions()
+    {
+        Console.Clear();
+        Console.WriteLine("=== Snake Game ===");
+        Console.WriteLine("Nhan phim bat ki de bat dau");
+        Console.ReadKey(true);
     }
 
     static void ReadInput()
@@ -60,7 +69,6 @@ class Program
             }
         }
     }
-
 
     static void Move()
     {
@@ -97,48 +105,42 @@ class Program
 
     static void Draw()
     {
-        Console.Clear();
+        Console.SetCursorPosition(0, 0);
 
-        for (int x = 0; x <= width + 1; x++)
+        // Vien
+        Console.WriteLine(new string('#', width + 2));
+
+        for (int y = 0; y < height; y++)
         {
-            Console.SetCursorPosition(x, 0);
             Console.Write("#");
-            Console.SetCursorPosition(x, height + 1);
-            Console.Write("#");
+            for (int x = 0; x < width; x++)
+            {
+                if (snake[0] == (x, y))
+                    Console.Write("O"); // dau ran
+                else if (snake.Contains((x, y)))
+                    Console.Write("o"); // than ran
+                else if (food == (x, y))
+                    Console.Write("@");
+                else
+                    Console.Write(" ");
+            }
+            Console.WriteLine("#");
         }
 
-        for (int y = 0; y <= height + 1; y++)
-        {
-            Console.SetCursorPosition(0, y);
-            Console.Write("#");
-            Console.SetCursorPosition(width + 1, y);
-            Console.Write("#");
-        }
+        // Vien duoi
+        Console.WriteLine(new string('#', width + 2));
 
-        foreach (var part in snake)
-        {
-            Console.SetCursorPosition(part.Item1 + 1, part.Item2 + 1);
-            Console.Write("O");
-        }
-
-        Console.SetCursorPosition(food.Item1 + 1, food.Item2 + 1);
-        Console.Write("@");
-
-
-        Console.SetCursorPosition(0, height + 2);
-        Console.Write($"Score: {score}");
+        Console.WriteLine($"Điểm: {score}");
     }
 
     static void GameOver()
     {
         Console.Clear();
-        Console.SetCursorPosition(width / 2 - 5, height / 2);
-        Console.WriteLine("GAME OVER!");
-        Console.SetCursorPosition(width / 2 - 6, height / 2 + 1);
-        Console.WriteLine($"Your Score: {score}");
-        Console.SetCursorPosition(width / 2 - 10, height / 2 + 2);
-        Console.WriteLine("Press any key to exit...");
-        Console.ReadKey();
+        Console.SetCursorPosition(0, 0);
+        Console.WriteLine(" GAME OVER!");
+        Console.WriteLine($" Diem cua ban: {score}");
+        Console.WriteLine("Nhan phim bat ki de thoat...");
+        Console.ReadKey(true);
         Environment.Exit(0);
     }
 }
